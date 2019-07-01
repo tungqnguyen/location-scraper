@@ -4,18 +4,16 @@ const express = require('express');
 
 const app = express();
 const port = 3000;
-const viewsPath = path.join(__dirname, '../views');
 const placeDetection = require('@alpaca-travel/place-detection');
 
 app.use(express.json());
-app.set('views', viewsPath);
 
 app.get('/', async (req, res) => {
   const { url } = req.query;
-  res.sendFile(path.join(`${viewsPath}/index.html`));
   try {
     const data = await placeDetection.scrape({ url });
-    console.log('data return from API to client', JSON.stringify(data));
+    // console.log('data return', JSON.stringify(data));
+    res.send(data);
   } catch (error) {
     console.log(error);
   }

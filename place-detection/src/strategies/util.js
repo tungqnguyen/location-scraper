@@ -7,16 +7,16 @@ const Util = {
       if (el != null) {
         switch (source) {
           case 'generalRegEx':
-            el.rank = 1;
+            el.score = 1;
             break;
           case 'ggMap':
-            el.rank = 2;
+            el.score = 2;
             break;
           case 'jsonLd':
-            el.rank = 3;
+            el.score = 3;
             break;
           default:
-            el.rank = -1;
+            el.score = -1;
         }
         el.foundFrom = [{
           source,
@@ -59,13 +59,14 @@ const Util = {
               found[key] = element[key];
             }
           });
-          found.rank += element.rank;
+          found.score += element.score;
         }
+      // push if list is empty
       } else {
         sortedList.push(element);
       }
     });
-    sortedList.sort((a, b) => (a.rank < b.rank ? 1 : -1));
+    sortedList.sort((a, b) => (a.score < b.score ? 1 : -1));
     return sortedList;
   },
   // check if lat/lon pair exist in array
@@ -73,7 +74,7 @@ const Util = {
     let exist = false;
     let index = null;
     array.map((item, i) => {
-      if (locationObject.lat == item.lat && locationObject.lon == item.lon) {
+      if (locationObject.hasOwnProperty('lat') && locationObject.hasOwnProperty('lon') && locationObject.lat == item.lat && locationObject.lon == item.lon) {
         exist = true;
         index = i;
       }

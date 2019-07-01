@@ -1,6 +1,5 @@
-/* eslint-disable no-param-reassign */
 /* eslint-disable no-prototype-builtins */
-/* eslint-disable no-undef */
+/* eslint-disable no-param-reassign */
 const axios = require('axios');
 const types = require('./place_types_in_schema_org');
 const Util = require('./util');
@@ -14,19 +13,21 @@ const jsonLd = {
       const collection = [];
       const locationCollection = [];
       if (object.hasOwnProperty('json-ld')) {
-        const jsonLdObject = object['json-ld'];
-        jsonLdObject.map((element, i) => {
+        const jsonLdArray = object['json-ld'];
+        jsonLdArray.map((element, i) => {
           // this will return an array of object
-          collection.push(this.extractObjects(element, allObjects = [], path = `jsonLd[${i}]`));
+          collection.push(this.extractObjects(element, [], `jsonLd[${i}]`));
         });
         // filter location Object
         collection.map((el) => {
-          locationObjects = el.filter((element, i) => types.includes(element['@type']));
+          // only take object with types relate to places
+          const locationObjects = el.filter((element, i) => types.includes(element['@type']));
           const locationInfo = [];
           const placeName = [];
           locationObjects.map((obj) => {
-            latLonObject = {};
-            destinationObject = {};
+            const latLonObject = {};
+            const destinationObject = {};
+            // get full address and lat/lon of the place object
             if (obj['@type'].indexOf('PostalAddress') >= 0) {
               destinationObject.location = this.concatAddress(obj);
               destinationObject.path = obj.path;
@@ -36,8 +37,9 @@ const jsonLd = {
               latLonObject.lon = obj.longitude;
               latLonObject.path = obj.path;
               locationInfo.push(latLonObject);
+              // get name of place of the object
             } else if (obj.name) {
-              destinationName = {};
+              const destinationName = {};
               destinationName.name = obj.name;
               destinationName.path = obj.path;
               placeName.push(destinationName);
@@ -45,14 +47,14 @@ const jsonLd = {
           });
           // now we have an array with @GeoCoordinates and @PostalAddress types
           placeName.map((placeObject) => {
-            locationInfo.map((v) => {
-              // match everything up to the last "."
-              const parentPath = v.path.match(/.*\./i)[0].slice(0, -1);
+            locationInfo.map((element) => {
+              // match everything up to the last "." to check if name object matches any lat/lon pair or geo coordinates
+              const parentPath = element.path.match(/.*\./i)[0].slice(0, -1);
               if (placeObject.path.indexOf(parentPath) >= 0) {
                 // combine object
-                Object.keys(v).map((key) => {
+                Object.keys(element).map((key) => {
                   if (!key.includes('path')) {
-                    placeObject[key] = v[key];
+                    placeObject[key] = element[key];
                   }
                 });
               }
@@ -67,7 +69,7 @@ const jsonLd = {
       }
       return [];
     } catch (error) {
-      console.log('error found', error);
+      console.log('jsonLd error', error);
     }
   },
   extractObjects(object, allObjects, path) {

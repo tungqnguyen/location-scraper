@@ -56,7 +56,7 @@ const generalRegEx = {
       }
       return [];
     } catch (error) {
-      console.log('regEx', error);
+      console.log('regEx error', error);
     }
   },
 

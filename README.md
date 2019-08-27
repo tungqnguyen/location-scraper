@@ -6,4 +6,4 @@ extract from Google Map links or extracting metadata from HTML file and return a
 - Clone the project and run npm install to install all the packages.
 - Run command node src/app.js in the terminal to start the project
 ## Usage
-After running the project, run the URL http://localhost:3000/?url={websiteUrl} extract locations from the website.
+After running the project, run the URL http://localhost:3000/?url={websiteUrl} to extract locations in the website.
